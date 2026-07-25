@@ -1,0 +1,691 @@
+{
+  "name": "Publisher-TG",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "channel_id",
+              "type": "number"
+            },
+            {
+              "name": "tg_chat_id"
+            },
+            {
+              "name": "final_text"
+            },
+            {
+              "name": "title"
+            },
+            {
+              "name": "selected_post_id",
+              "type": "number"
+            },
+            {
+              "name": "source_id",
+              "type": "number"
+            },
+            {
+              "name": "source_url"
+            },
+            {
+              "name": "image_url"
+            },
+            {
+              "name": "video_url"
+            }
+          ]
+        }
+      },
+      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "typeVersion": 1.1,
+      "name": "Execute Publisher-TG",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        272,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.all()[0];\n\n// Убираем ВСЕ whitespace-символы включая unicode (не только обычный пробел)\nconst rawId = String(item.json.tg_chat_id || '');\nitem.json.tg_chat_id = parseInt(rawId.replace(/[^0-9\\-]/g, ''));\n\nreturn [item];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        384
+      ],
+      "id": "e0ac2888-e070-490d-aec0-586cc6a578f4",
+      "name": "PUB-TG: Code Prep Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "19eef0eb-4568-4db2-ba13-77b164428908",
+              "leftValue": "={{ $json.video_url !== \"\" && $json.video_url !== null }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        656,
+        384
+      ],
+      "id": "9020918b-e6c4-465c-8d4e-1ce8735ab609",
+      "name": "PUB-TG: Media Router"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.video_url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "data_video"
+            }
+          },
+          "proxy": "={{ $env.PROXY_URL }}"
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        880,
+        288
+      ],
+      "id": "5e7c478f-edf0-4895-a23f-1eaeb4ed7c9a",
+      "name": "PUB-TG: Dwnld vid"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.image_url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "data_image"
+            }
+          },
+          "proxy": "={{ $env.PROXY_URL }}"
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        880,
+        480
+      ],
+      "id": "5b71fed8-7905-4e4a-9074-eeeee4b78b16",
+      "name": "PUB-TG: Dwnld img"
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "={{ $json.tg_chat_id }}",
+        "binaryData": true,
+        "binaryPropertyName": "data_image",
+        "additionalFields": {
+          "caption": "={{ \"*\" + $('Execute Publisher-TG').all()[0].json.title + \"*\\n\\n\" + $('Execute Publisher-TG').all()[0].json.final_text }}",
+          "parse_mode": "Markdown"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1104,
+        480
+      ],
+      "id": "8e0be520-ba5b-4d3f-b023-1968300f3c3c",
+      "name": "PUB-TG: Send img mess",
+      "webhookId": "ac93f498-8f75-459b-a291-76ee47a995e8",
+      "credentials": {
+        "telegramApi": {
+          "id": "A93ifa15DpBnN7Eg",
+          "name": "testgifterist_bot"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "sendVideo",
+        "chatId": "={{ $json.tg_chat_id }}",
+        "binaryData": true,
+        "binaryPropertyName": "data_video",
+        "additionalFields": {
+          "caption": "={{ \"*\" + $('Execute Publisher-TG').all()[0].json.title + \"*\\n\\n\" + $('Execute Publisher-TG').all()[0].json.final_text }}",
+          "parse_mode": "Markdown"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1104,
+        288
+      ],
+      "id": "1eeca659-0a09-4288-a7b1-b7c99d863057",
+      "name": "PUB-TG: Send vid mess",
+      "webhookId": "ac93f498-8f75-459b-a291-76ee47a995e8",
+      "credentials": {
+        "telegramApi": {
+          "id": "A93ifa15DpBnN7Eg",
+          "name": "testgifterist_bot"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "sources",
+          "mode": "list",
+          "cachedResultName": "sources"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Execute Publisher-TG').all()[0].json.source_id }}",
+            "last_processed_id": "={{ $('Execute Publisher-TG').all()[0].json.selected_post_id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "channel_id",
+              "displayName": "channel_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "user_id",
+              "displayName": "user_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "source_url",
+              "displayName": "source_url",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "last_processed_id",
+              "displayName": "last_processed_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "public_id",
+              "displayName": "public_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1696,
+        368
+      ],
+      "id": "9d431d09-cf44-45f8-8be0-a0ff18044d8a",
+      "name": "PUB-TG: PG Update Source",
+      "credentials": {
+        "postgres": {
+          "id": "wkLZ9j8s0cYjutRB",
+          "name": "content_saas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "posts_queue",
+          "mode": "list",
+          "cachedResultName": "posts_queue"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "origin_post_id": "={{ $('Execute Publisher-TG').all()[0].json.selected_post_id }}",
+            "scheduled_time": "={{ new Date().toISOString() }}",
+            "source_url": "={{ $('Execute Publisher-TG').all()[0].json.source_url }}",
+            "payload": "={{ JSON.stringify($('Execute Publisher-TG').all()[0].json) }}",
+            "status": "SUCCESS",
+            "channel_id": "={{ $('Execute Publisher-TG').all()[0].json.channel_id }}",
+            "published_post_id": "={{ $('PUB-TG: Extract MsgId').first().json.published_post_id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "channel_id",
+              "displayName": "channel_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source_url",
+              "displayName": "source_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "origin_post_id",
+              "displayName": "origin_post_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "published_post_id",
+              "displayName": "published_post_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "payload",
+              "displayName": "payload",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "scheduled_time",
+              "displayName": "scheduled_time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "public_id",
+              "displayName": "public_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1856,
+        368
+      ],
+      "id": "7cd7e4f7-8b82-45e6-89d3-5ab13b9b1dcf",
+      "name": "PUB-TG: PG Log Post",
+      "credentials": {
+        "postgres": {
+          "id": "wkLZ9j8s0cYjutRB",
+          "name": "content_saas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "435454ee-3f9a-436a-ae1c-ec06d61ff583",
+              "name": "published_post_id",
+              "value": "={{ $json.result.message_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1296,
+        368
+      ],
+      "id": "d429add7-fe73-4549-8f8f-1fdce0d8cc7e",
+      "name": "PUB-TG: Extract MsgId"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6d6d372f-f3aa-44a0-957d-0aa2fa8b03f7",
+              "leftValue": "={{ $json.published_post_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1504,
+        464
+      ],
+      "id": "308e2c12-5744-48d8-8dae-0f77722f523b",
+      "name": "PUB-TG: If Send OK"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO posts_queue (channel_id, source_url, origin_post_id, status, payload, scheduled_time)\nVALUES (\n  {{ $('Execute Publisher-TG').first().json.channel_id }},\n  '{{ $('Execute Publisher-TG').first().json.source_url }}',\n  {{ $('Execute Publisher-TG').first().json.selected_post_id }},\n  'FAILED_SEND',\n  '{{ JSON.stringify($('Execute Publisher-TG').first().json) }}'::jsonb,\n  NOW()\n)",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1728,
+        576
+      ],
+      "id": "d5f43a98-e7e4-4e12-9584-7f9800bf49f0",
+      "name": "PUB-TG: PG Log Send Failed",
+      "credentials": {
+        "postgres": {
+          "id": "wkLZ9j8s0cYjutRB",
+          "name": "content_saas"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Execute Publisher-TG": {
+      "main": [
+        [
+          {
+            "node": "PUB-TG: Code Prep Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PUB-TG: Code Prep Fields": {
+      "main": [
+        [
+          {
+            "node": "PUB-TG: Media Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PUB-TG: Media Router": {
+      "main": [
+        [
+          {
+            "node": "PUB-TG: Dwnld vid",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "PUB-TG: Dwnld img",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PUB-TG: Dwnld vid": {
+      "main": [
+        [
+          {
+            "node": "PUB-TG: Send vid mess",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PUB-TG: Dwnld img": {
+      "main": [
+        [
+          {
+            "node": "PUB-TG: Send img mess",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PUB-TG: Send img mess": {
+      "main": [
+        [
+          {
+            "node": "PUB-TG: Extract MsgId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PUB-TG: Send vid mess": {
+      "main": [
+        [
+          {
+            "node": "PUB-TG: Extract MsgId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PUB-TG: PG Update Source": {
+      "main": [
+        [
+          {
+            "node": "PUB-TG: PG Log Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PUB-TG: Extract MsgId": {
+      "main": [
+        [
+          {
+            "node": "PUB-TG: If Send OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PUB-TG: If Send OK": {
+      "main": [
+        [
+          {
+            "node": "PUB-TG: PG Update Source",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "PUB-TG: PG Log Send Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "KCkrFUVKtx9SgAad"
+  },
+  "versionId": "b3319b97-78e5-494b-ba45-5ca8ed5d4657",
+  "meta": {
+    "instanceId": ""
+  },
+  "id": "E7GoqrKjPzHBSw9W",
+  "tags": []
+}

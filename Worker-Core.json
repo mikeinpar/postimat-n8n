@@ -1,0 +1,1349 @@
+{
+  "name": "Worker-Core",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "TMntEWBkIryYT60H",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/TMntEWBkIryYT60H",
+          "cachedResultName": "Publisher-MAX"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "channel_id": "={{ $('WC: Build Payload').all()[0].json.channel_id }}",
+            "max_chat_id": "={{ $('WC: Build Payload').all()[0].json.max_chat_id }}",
+            "selected_post_id": "={{ $('WC: Build Payload').all()[0].json.selected_post_id }}",
+            "source_id": "={{ $('WC: Build Payload').all()[0].json.source_id }}",
+            "final_text": "={{ $('WC: Build Payload').all()[0].json.final_text }}",
+            "title": "={{ $('WC: Build Payload').all()[0].json.title }}",
+            "source_url": "={{ $('WC: Build Payload').all()[0].json.source_url }}",
+            "image_url": "={{ $('WC: Build Payload').all()[0].json.image_url }}",
+            "video_url": "={{ $('WC: Build Payload').all()[0].json.video_url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "channel_id",
+              "displayName": "channel_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "max_chat_id",
+              "displayName": "max_chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "final_text",
+              "displayName": "final_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "selected_post_id",
+              "displayName": "selected_post_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "source_id",
+              "displayName": "source_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "source_url",
+              "displayName": "source_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "image_url",
+              "displayName": "image_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "video_url",
+              "displayName": "video_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        4160,
+        432
+      ],
+      "id": "d7a11cf9-bc83-49db-9647-54df14c19862",
+      "name": "Execute Workflow Publisher-MAX",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "E7GoqrKjPzHBSw9W",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/E7GoqrKjPzHBSw9W",
+          "cachedResultName": "Publisher-TG"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "channel_id": "={{ $('WC: Build Payload').all()[0].json.channel_id }}",
+            "tg_chat_id": "={{ $('WC: Build Payload').all()[0].json.tg_chat_id }}",
+            "selected_post_id": "={{ $('WC: Build Payload').all()[0].json.selected_post_id }}",
+            "source_id": "={{ $('WC: Build Payload').all()[0].json.source_id }}",
+            "final_text": "={{ $('WC: Build Payload').all()[0].json.final_text }}",
+            "title": "={{ $('WC: Build Payload').all()[0].json.title }}",
+            "source_url": "={{ $('WC: Build Payload').all()[0].json.source_url }}",
+            "image_url": "={{ $('WC: Build Payload').all()[0].json.image_url }}",
+            "video_url": "={{ $('WC: Build Payload').all()[0].json.video_url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "channel_id",
+              "displayName": "channel_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            },
+            {
+              "id": "tg_chat_id",
+              "displayName": "tg_chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "final_text",
+              "displayName": "final_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "selected_post_id",
+              "displayName": "selected_post_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            },
+            {
+              "id": "source_id",
+              "displayName": "source_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            },
+            {
+              "id": "source_url",
+              "displayName": "source_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "image_url",
+              "displayName": "image_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "video_url",
+              "displayName": "video_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        4160,
+        240
+      ],
+      "id": "d38d56a7-854f-4d3a-be93-6cbc4b2d126f",
+      "name": "Execute Workflow Publisher-TG",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "sources",
+          "mode": "list",
+          "cachedResultName": "sources"
+        },
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "=channel_id",
+              "value": "={{ $('WC: Execute Worker-Core').item.json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        800,
+        368
+      ],
+      "id": "2998f324-7288-4f14-b76c-5594e703a25f",
+      "name": "WC: PG Get Sources",
+      "credentials": {
+        "postgres": {
+          "id": "wkLZ9j8s0cYjutRB",
+          "name": "content_saas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.source_url }}",
+        "options": {
+          "response": {
+            "response": {}
+          },
+          "proxy": "={{ $env.PROXY_URL }}"
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        960,
+        544
+      ],
+      "id": "73465ead-0f5f-4f53-a2ba-c4b2d46f125a",
+      "name": "WC: TG Parser",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "posts",
+              "cssSelector": ".tgme_widget_message_wrap",
+              "returnValue": "html",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        1120,
+        368
+      ],
+      "id": "c16ae7dc-c623-41cf-ae95-c6bfbc72ba42",
+      "name": "WC: Extract HTML"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "posts",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        368
+      ],
+      "id": "17ef3fad-b1ff-4299-a3e8-1459ca45c1b4",
+      "name": "WC: Split Posts"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "82d138c9-ff39-45d3-b50c-fadec1ef6ab0",
+              "name": "post_id",
+              "value": "={{ $json.posts.match(/data-post=\".*?\\/(\\d+)\"/)?.[1] }}",
+              "type": "number"
+            },
+            {
+              "id": "336e94a3-fad7-4c40-a60c-470d080a8ad6",
+              "name": "views",
+              "value": "={{ parseInt(($json.post.match(/class=\"tgme_widget_message_views[^>]*>([^<]+)/)?.[1] || \"\").replace(/K/gi, '000').replace(/[^0-9]/g, '')) || 1 }}",
+              "type": "number"
+            },
+            {
+              "id": "9cbd6cbc-7740-43e5-83e3-af96d8698bbe",
+              "name": "reactions",
+              "value": "={{ ($json.posts.match(/class=\"tgme_reaction\".*?<\\/i>\\d+/g) || []).reduce((acc, m) => acc + parseInt(m.split('</i>')[1]), 0) }}",
+              "type": "number"
+            },
+            {
+              "id": "8bb48f1d-fc08-4209-9c03-07948a7d90a1",
+              "name": "channel_name",
+              "value": "={{ $('WC: PG Get Sources').item.json.source_url.split('/s/')[1] }}",
+              "type": "string"
+            },
+            {
+              "id": "4acb170d-fb79-462a-90ae-3a6918e9a475",
+              "name": "last_id",
+              "value": "={{ $('WC: PG Get Sources').item.json.last_processed_id }}",
+              "type": "number"
+            },
+            {
+              "id": "ab8f30c2-15da-4984-8e68-6ebd311ea13e",
+              "name": "image_url",
+              "value": "={{ $json.posts.match(/background-image:url\\('(https:\\/\\/cdn[^']+)'\\)/i)?.[1] || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "af7162bc-f7e9-4694-b32a-6ed892be3d6b",
+              "name": "video_url",
+              "value": "={{ $json.posts.match(/<video[^>]+src=\"([^\"]+)\"/i)?.[1] || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "fc7ef75c-9845-4b7e-84ac-2ae899d24654",
+              "name": "source_id",
+              "value": "={{ $('WC: PG Get Sources').item.json.id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1424,
+        368
+      ],
+      "id": "7af078e6-3152-4733-9ad2-3b0498fdbd2c",
+      "name": "WC: Map Post Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dfa1e4c9-acff-4dc5-9bc0-f80ce691466d",
+              "leftValue": "={{ $json.post_id }}",
+              "rightValue": "={{ $json.last_id }}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1568,
+        368
+      ],
+      "id": "d0c1897b-51a8-4b9b-aaaa-98ffe83ae636",
+      "name": "WC: Dedup Filter"
+    },
+    {
+      "parameters": {
+        "jsCode": "const MIN_LENGTH = 100; \n\nlet processedPosts = [];\n\nconst rawChatId = $('WC: PG Get Sources').first().json.source_url.split('/s/')[1] || '';\nconst ownChannel = rawChatId.replace('@', '').toLowerCase();\n\n// Белый список:\nconst allowedDomains = [\n    ownChannel,       // собственный канал\n    'telegra.ph',     // Telegraph — платформа Telegram\n    't.me/iv',        // Instant View ссылки\n];\n\nfor (const item of $input.all()) {\n    const json = item.json;\n    const html = json.posts || \"\";\n    const reactions = Number(json.reactions) || 0;\n    const views = Number(json.views) || 0;\n    \n    // 1. Изолируем только блок с текстом поста (игнорируем аватарки и кнопки)\n    const textBlockMatch = html.match(/class=\"tgme_widget_message_text[^>]*>([\\s\\S]*?)<\\/div>/);\n    const postTextHtml = textBlockMatch ? textBlockMatch[1] : \"\";\n    \n    // 2. Очищаем текст для проверки длины и передачи нейросети\n    let tempText = postTextHtml.replace(/<br\\s*\\/?>/gi, '\\n');\n    const betatextClean = tempText.replace(/<[^>]*>/g, '').trim();\n\n   // 3. Фильтры мусора и поиск видео\nconst isForwarded = html.includes('tgme_widget_message_forwarded_from'); \nconst isRoundVideo = html.includes('round_video'); // Ищем маркер \"кружочка\"\nconst adKeywords = ['erid:', '#реклама', 'заказать по ссылке'];\nconst hasAdKeywords = adKeywords.some(word => postTextHtml.toLowerCase().includes(word));\nconst isPoll = html.includes('tgme_widget_message_poll');\nconst isMediaTooBig = html.includes('Media is too big');\nconst isTooShort = betatextClean.length < MIN_LENGTH;\n  \n    const linksMatch = postTextHtml.match(/href=\"([^\"]*)\"/g) || [];\n    let hasForeignLink = false;\n\n    for (let link of linksMatch) {\n        let url = link.replace('href=\"', '').replace('\"', '');\n        // Если ссылка ведет наружу (http) и ее нет в белом списке - это чужая реклама\n        if (url.startsWith('http') && !allowedDomains.some(domain => url.includes(domain))) {\n            hasForeignLink = true; // Нашли чужую ссылку — прерываем цикл проверки ссылок\n            break;\n        }\n    }\n\n// Блокируем кружочки, но пропускаем обычные видео!\nif (isForwarded || isRoundVideo || isPoll || isTooShort || hasAdKeywords || isMediaTooBig || !betatextClean) continue;\n\n\n  // ФИНАЛЬНАЯ ОЧИСТКА ХВОСТОВ (с сохранением абзацев)\n  let textClean = betatextClean\n    // вырезаем все \"голые\" ссылки вида https://...\n    .replace(/https?:\\/\\/[^\\s]+/gi, '')\n    // Отрезаем всё от стоп-слова до конца строки (.* означает \"любые символы до конца строки\")\n    .replace(/(Подписывайтесь|Подписывайся) на .*/gi, '')\n    .replace(/(Следите|Читай) за новостями .*/gi, '')\n    .replace(/(Наш|Мой) канал:? .*/gi, '')\n    \n    // Добавляем специфичный мусор из твоих постов-доноров:\n    .replace(/(Больше советов тут|Читайте далее) .*/gi, '')\n    .replace(/Мы в MAX.*/gi, '')\n    .replace(/читать полностью.*/gi, '')\n    \n    // Убираем двойные/тройные пробелы внутри строк (но не трогаем \\n)\n    .replace(/[ \\t]{2,}/g, ' ')\n    // Схлопываем 3 и более пустых строки в аккуратные двойные отступы\n    .replace(/\\n{3,}/g, '\\n\\n')\n    .trim();\n\n    // 4. Безопасный расчет ERR\n    const err = (views > 0) ? (reactions / views) * 100 : 0;\n\n    processedPosts.push({\n        json: {\n            ...json,\n            err: err,\n            text_clean: textClean, // Передаем чистый текст для ИИ\n            has_foreign_link: hasForeignLink  // AI сам решит\n        }\n    });\n}\n\nreturn processedPosts;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1728,
+        368
+      ],
+      "id": "c7ed717c-01b0-4b85-8d09-dde35bde2508",
+      "name": "WC: Filter + ERR"
+    },
+    {
+      "parameters": {
+        "jsCode": "const TOP_COUNT = 10;    \n\nconst items = $input.all();\n\n// 1. Сортируем по ERR (от большего к меньшему)\nconst sorted = items.sort((a, b) => b.json.err - a.json.err);\n\n// 2. Формируем ОТДЕЛЬНЫЕ элементы для каждого кандидата\nconst topCandidates = sorted.slice(0, TOP_COUNT).map(item => {\n    return {\n        json: {\n            post_id: item.json.post_id,\n            text: item.json.text_clean,\n            image: item.json.image_url,\n            video: item.json.video_url,\n            channel: item.json.channel_name,\n            err: item.json.err,\n            source_id: item.json.source_id\n        }\n    };\n});\n\n// 3. Возвращаем массив элементов. n8n воспримет их как 10 отдельных потоков данных!\nreturn topCandidates;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1888,
+        368
+      ],
+      "id": "4fdde2d5-d5a6-4a8f-9264-cd0c97d7cfb2",
+      "name": "WC: Top-10 ERR"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Вот пост для анализа. Оцени и верни JSON:\n{{ $json.text }}\n",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=Ты — безжалостный модератор Telegram-канала.\nЯ дам тебе текст поста. Твоя задача найти в нем маскированную рекламу, инфоцыганство или байт.\n\nБЛОКИРУЙ ПОСТ (ставь is_approved: false), если есть:\n1. Заработок, деньги, пособия: \"как я заработала\", \"выплаты от государства\", \"декретные\".\n2. Услуги и курсы: реклама юристов, врачей, астрологов, фитнес-тренеров, гайды, чеклисты.\n3. Личные драмы (прогревы): истории про развод, плохую свекровь, проблемы с мужем/детьми.\n4. Кликбейт: математические задачки (\"решит не каждый\"), тесты на IQ, призывы \"смотреть ответ в источнике\".\n5. Любые товары с подозрительным описанием (явно рекламным языком).\n6. Пустые пожелания (Тайминг): посты, состоящие ТОЛЬКО из пожеланий \"доброго утра\", \"спокойной ночи\", \"как спалось\", \"хорошего дня\". (Если в посте есть полноценный полезный рецепт, НЕ БЛОКИРУЙ его из-за одного слова \"утро\").\n\nПРОПУСКАЙ ПОСТ (ставь is_approved: true), если это:\n{{ $('WC: Execute Worker-Core').first().json.filter_prompt }}\n\nЕсли has_foreign_link = true — проверь контекст ссылки. \nРеклама товара/услуги → is_approved: false. \nСсылка на статью/источник данных → оставляй.\n\nВЕРНИ СТРОГО JSON:\n{\n  \"reason\": \"Кратко объясни, есть ли тут маркеры рекламы\",\n  \"is_approved\": true или false\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        2288,
+        368
+      ],
+      "id": "3221db64-90f2-48ea-a247-f8705d6b3828",
+      "name": "WC: AI Censor",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "try {\n  // 1. Ищем ответ ИИ-Привратника\n  let rawText = $input.item.json.output || $input.item.json.text || $input.item.json.message?.content || \"\";\n  \n  // 2. Очищаем от мусора и парсим\n  let cleanJsonStr = rawText.replace(/```json/gi, '').replace(/```/gi, '').trim();\n  let parsed = JSON.parse(cleanJsonStr);\n\n  // 3. МАГИЯ N8N: Достаем оригинальный пост из ноды ДО нейросети!\n  // $('ИМЯ_НОДЫ').item.json берет ровно тот пост, который сейчас проверялся\n  let originalPost = $('WC: Top-10 ERR').item.json;\n\n  // 4. Склеиваем всё вместе\n  return {\n    json: {\n      ...originalPost, // Возвращаем на место post_id, text_clean, image_url и т.д.\n      is_approved: parsed.is_approved,\n      reason: parsed.reason // Оставляем причину на случай, если захочешь проверить логику ИИ\n    }\n  };\n} catch (e) {\n  // Предохранитель, если ИИ выдал бред\n  let originalPost = $('WC: Top-10 ERR').item.json;\n  return {\n    json: {\n      ...originalPost,\n      is_approved: false,\n      reason: \"Ошибка парсинга ответа ИИ: \" + e.message\n    }\n  };\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2592,
+        368
+      ],
+      "id": "d657a508-3e59-4bd3-84a5-9969975e25ea",
+      "name": "WC: Parse Censor"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "559513b4-48c6-42e3-9250-5ebcd38d4e04",
+              "leftValue": "={{ $json.is_approved }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        2752,
+        368
+      ],
+      "id": "0de46521-f6d1-4cfc-8cb1-86ae7e90fbc7",
+      "name": "WC: Approved Filter",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        3120,
+        368
+      ],
+      "id": "bc51f676-9ff2-4134-9083-b15ccb480e04",
+      "name": "WC: Limit 1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3280,
+        368
+      ],
+      "id": "1d7559e3-3c4d-43b5-a651-bfafbf5f6a25",
+      "name": "WC: Pause",
+      "webhookId": "ee1db76d-9c43-4cd7-bc28-432e8b6222d6"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Вот текст, измени его и верни JSON:\n{{ $json.text }}",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=Ты — опытный главный редактор Telegram-канала. Твоя цель — сделать глубокий, но бережный рерайт предоставленного текста.\n\nТЕМАТИКА И ГОЛОС КАНАЛА:\n{{ $('WC: Execute Worker-Core').first().json.generation_prompt }}\n\nПРАВИЛА РЕРАЙТА:\n1. Перефразирование: Обязательно измени структуру предложений и используй синонимы. Напиши текст живым языком от лица \"опытного\".\n2. Сохранение фактов: Точно перенеси все цифры, пропорции, термины и названия из исходника.\n3. Оригинальная структура (CRITICAL): Оставь исходный формат подачи (списки, пошаговые инструкции).\n4. Очистка: БЕЗЖАЛОСТНО ВЫРЕЗАЙ любые приветствия (\"Доброе утро\", \"Привет всем\"), упоминания времени суток, упоминания чужих каналов, призывы подписаться и личные местоимения. Начинай текст сразу с сути (с рецепта или факта).\n5. Эмодзи: Расставь 2-3 смысловых эмодзи.\n6. Длина финального заголовка+текста  должна быть строго в пределах 900 символов.\n7. Текст и заголовок должны быть полностью на русском языке.\n\nФормат вывода: Один емкий заголовок, затем пустая строка, затем основной текст (начинай сразу с сути, не дублируя заголовок).\n\nТВОЙ ВЫВОД (СТРОГО JSON):\n{\n\"title\": \"Только заголовок\",\n\"final_text\": \"Основной переписанный текст с сохранением структуры донора\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        3440,
+        368
+      ],
+      "id": "afee1a62-c450-417f-9f00-8980821afc12",
+      "name": "WC: AI Editor",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n    // 1. Парсим текст и заголовок от Второго ИИ (Твой код)\n    let rawOutput = $json.output || $json.text || \"\";\n    rawOutput = rawOutput.replace(/```json/gi, '').replace(/```/gi, '').trim();\n\n    const jsonMatch = rawOutput.match(/\\{[\\s\\S]*\\}/);\n    if (!jsonMatch) throw new Error(\"JSON не найден в ответе ИИ-редактора\");\n    \n    let jsonString = jsonMatch[0];\n    let cleanJson = '';\n    let inString = false;\n    let escapeNext = false;\n\n    for (let i = 0; i < jsonString.length; i++) {\n        let char = jsonString[i];\n        if (escapeNext) { cleanJson += char; escapeNext = false; continue; }\n        if (char === '\\\\') { cleanJson += char; escapeNext = true; continue; }\n        if (char === '\"') { inString = !inString; cleanJson += char; continue; }\n        \n        if (inString && char === '\\n') { cleanJson += '\\\\n'; continue; }\n        if (inString && char === '\\r') { cleanJson += '\\\\r'; continue; }\n        if (inString && char === '\\t') { cleanJson += '\\\\t'; continue; }\n        cleanJson += char;\n    }\n\n    const data = JSON.parse(cleanJson);\n\n    // 2. МАГИЯ: Подтягиваем оригинальные ссылки из прошлой ноды!\n    // ВПИШИ СЮДА ИМЯ НОДЫ ИЗ ШАГА 1\n    const metaData = $('WC: Limit 1').all()[0].json;\n\n    // 3. Формируем финальный идеальный пакет для отправки в Telegram\n    return {\n        final_text: data.final_text || \"Текст не найден\",\n        title: data.title || \"\",\n        selected_post_id: metaData.post_id,\n        source_id:   metaData.source_id,\n        channel: metaData.channel,\n        image_url: metaData.image || metaData.image_url || \"\",\n        video_url: metaData.video || metaData.video_url || \"\",\n        channel_id:  $('WC: Execute Worker-Core').all()[0].json.id,\n        tg_chat_id:  $('WC: Execute Worker-Core').all()[0].json.tg_chat_id || null,\n        max_chat_id: $('WC: Execute Worker-Core').all()[0].json.max_chat_id || null,\n        source_url:   'https://t.me/s/' + metaData.channel,\n    };\n\n} catch (error) {\n    throw new Error(\"Ошибка сборки финального поста: \" + error.message);\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3744,
+        368
+      ],
+      "id": "3c39cdf9-3b41-42e1-856b-923665e14313",
+      "name": "WC: Build Payload"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE channels\nSET last_publish_date_hour = '{{ $now.toISO().slice(0,13).replace(\"T\",\"_\") }}'\nWHERE id = {{ $('WC: Execute Worker-Core').first().json.id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4496,
+        320
+      ],
+      "id": "0cce6cbf-8103-42af-a9b9-f9761d509f6e",
+      "name": "WC: PG Capture Slot",
+      "credentials": {
+        "postgres": {
+          "id": "wkLZ9j8s0cYjutRB",
+          "name": "content_saas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ !!$('WC: Build Payload').all()[0].json.tg_chat_id }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "9bd15399-e68f-48fb-8433-557cd466df03"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "TG"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6ef15ba9-b659-40be-a667-54f830e4a0b6",
+                    "leftValue": "={{ !!$('WC: Build Payload').all()[0].json.max_chat_id }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "MAX"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        3952,
+        352
+      ],
+      "id": "22b43f7c-ef9b-4610-be43-b721ad156fa6",
+      "name": "WC: Platform Router"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO posts_queue (channel_id, status, payload, scheduled_time)\nVALUES (\n  {{ $('WC: Build Payload').all()[0].json.channel_id }},\n  'FAILED',\n  '{{ JSON.stringify($('WC: Build Payload').all()[0].json) }}'::jsonb,\n  NOW()\n)",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4160,
+        656
+      ],
+      "id": "b0691245-2a3f-4080-a136-2176bb85a816",
+      "name": "WC: PG Log Failed Route",
+      "credentials": {
+        "postgres": {
+          "id": "wkLZ9j8s0cYjutRB",
+          "name": "content_saas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "id",
+              "type": "number"
+            },
+            {
+              "name": "tg_chat_id"
+            },
+            {
+              "name": "max_chat_id"
+            },
+            {
+              "name": "posting_hours"
+            },
+            {
+              "name": "last_publish_date_hour"
+            },
+            {
+              "name": "filter_prompt"
+            },
+            {
+              "name": "generation_prompt"
+            },
+            {
+              "name": "allowed_domains"
+            }
+          ]
+        }
+      },
+      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "typeVersion": 1.1,
+      "name": "WC: Execute Worker-Core",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        608,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b8928e47-69d3-4bb3-b352-83a2ca37e512",
+              "leftValue": "={{ $json.is_approved }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2944,
+        480
+      ],
+      "id": "f2fd56bf-4150-42c3-889f-f511dad61860",
+      "name": "WC: If Empty"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.ADMIN_CHAT_ID }}",
+        "text": "=🚨 НЕТ КОНТЕНТА ДЛЯ ПУБЛИКАЦИИ\n\n🆔 channel_id: {{ $('WC: Execute Worker-Core').all()[0].json.id }}\n📌 Chat: {{ $('WC: Execute Worker-Core').all()[0].json.tg_chat_id || $('WC: Execute Worker-Core').all()[0].json.max_chat_id }}\n🌐 Платформа: {{ $('WC: Execute Worker-Core').all()[0].json.tg_chat_id ? 'Telegram' : 'MAX' }}\n🕐 Слот: {{ $('WC: Execute Worker-Core').all()[0].json.posting_hours }}\n\n📰 Источники ({{ $('WC: PG Get Sources').all().length }} шт):\n{{ $('WC: PG Get Sources').all().map(s => '• ' + s.json.source_url).join('\\n') }}\n\n🔍 Фильтр-промпт:\n{{ $('WC: Execute Worker-Core').all()[0].json.filter_prompt.slice(0, 300) }}\n\n⏰ {{ new Date().toLocaleString('ru-RU', {timeZone: 'Europe/Moscow'}) }}\n\nПричина: все посты отклонены цензором или источники пусты.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3152,
+        576
+      ],
+      "id": "1ebca4a8-1691-494e-9c60-22e80a7b696b",
+      "name": "WC: TG Alert No Content",
+      "webhookId": "5cf4fc7a-d1eb-413b-9d80-cf6bc292f5d2",
+      "credentials": {
+        "telegramApi": {
+          "id": "A93ifa15DpBnN7Eg",
+          "name": "testgifterist_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.ADMIN_CHAT_ID }}",
+        "text": "=❌ WC: No destination\\nchannel_id: {{ $json.channel_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4368,
+        656
+      ],
+      "id": "bb551d37-c710-428b-9a33-4dd8a9ef74be",
+      "name": "WC: TG Alert No Destination",
+      "webhookId": "5cf4fc7a-d1eb-413b-9d80-cf6bc292f5d2",
+      "credentials": {
+        "telegramApi": {
+          "id": "A93ifa15DpBnN7Eg",
+          "name": "testgifterist_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO posts_queue (channel_id, status, payload, scheduled_time)\nVALUES (\n  {{ $('WC: Execute Worker-Core').first().json.id }},\n  'FAILED_PARSER',\n  '{{ JSON.stringify({ source_url: $json.source_url, error: $json.error?.message }) }}'::jsonb,\n  NOW()\n)",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1152,
+        560
+      ],
+      "id": "a909e9a0-5b57-4384-94b8-ec140f3f77a4",
+      "name": "WC: PG Log Parser Failed",
+      "credentials": {
+        "postgres": {
+          "id": "wkLZ9j8s0cYjutRB",
+          "name": "content_saas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.ADMIN_CHAT_ID }}",
+        "text": "=❌ Parser Failed\nchannel_id: {{ $('WC: Execute Worker-Core').first().json.id }}\nsource: {{ $('WC: PG Get Sources').first().json.source_url }}\nerror: {{ $json.error?.message }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1344,
+        560
+      ],
+      "id": "63576318-bbeb-4246-a2a0-917d6a08dc6f",
+      "name": "WC: TG Alert Parser Failed",
+      "webhookId": "5cf4fc7a-d1eb-413b-9d80-cf6bc292f5d2",
+      "credentials": {
+        "telegramApi": {
+          "id": "A93ifa15DpBnN7Eg",
+          "name": "testgifterist_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "openai/gpt-oss-20b",
+          "mode": "list",
+          "cachedResultName": "openai/gpt-oss-20b"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        2176,
+        592
+      ],
+      "id": "b422e673-6a06-432a-bc22-d9923cfe51ae",
+      "name": "WC: AI Censor Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "yvvVqgyRl791SubS",
+          "name": "siliconflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "Qwen/Qwen2.5-7B-Instruct",
+          "mode": "list",
+          "cachedResultName": "Qwen/Qwen2.5-7B-Instruct"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        2320,
+        592
+      ],
+      "id": "5935da2e-0a38-4371-86c6-50858a7b0650",
+      "name": "WC: AI Censor Chat Model FB",
+      "credentials": {
+        "openAiApi": {
+          "id": "yvvVqgyRl791SubS",
+          "name": "siliconflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "deepseek-ai/DeepSeek-V3",
+          "mode": "list",
+          "cachedResultName": "deepseek-ai/DeepSeek-V3"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        3376,
+        608
+      ],
+      "id": "e492ae79-6aa2-43c9-8275-73cabbbf1cca",
+      "name": "WC: AI Editor Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "yvvVqgyRl791SubS",
+          "name": "siliconflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "Qwen/Qwen2.5-72B-Instruct",
+          "mode": "list",
+          "cachedResultName": "Qwen/Qwen2.5-72B-Instruct"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        3488,
+        608
+      ],
+      "id": "eb4a65db-a78e-4a28-9943-45073c574d4e",
+      "name": "WC: AI Editor Chat Model FB",
+      "credentials": {
+        "openAiApi": {
+          "id": "yvvVqgyRl791SubS",
+          "name": "siliconflow"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        3600,
+        608
+      ],
+      "id": "b17e5a35-d7f1-4dcc-8c42-703d972df733",
+      "name": "WC: AI Editor Think"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WC: PG Get Sources": {
+      "main": [
+        [
+          {
+            "node": "WC: TG Parser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: TG Parser": {
+      "main": [
+        [
+          {
+            "node": "WC: Extract HTML",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WC: PG Log Parser Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: Extract HTML": {
+      "main": [
+        [
+          {
+            "node": "WC: Split Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: Split Posts": {
+      "main": [
+        [
+          {
+            "node": "WC: Map Post Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: Map Post Fields": {
+      "main": [
+        [
+          {
+            "node": "WC: Dedup Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: Dedup Filter": {
+      "main": [
+        [
+          {
+            "node": "WC: Filter + ERR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: Filter + ERR": {
+      "main": [
+        [
+          {
+            "node": "WC: Top-10 ERR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: Top-10 ERR": {
+      "main": [
+        [
+          {
+            "node": "WC: AI Censor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: AI Censor": {
+      "main": [
+        [
+          {
+            "node": "WC: Parse Censor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: Parse Censor": {
+      "main": [
+        [
+          {
+            "node": "WC: Approved Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: Approved Filter": {
+      "main": [
+        [
+          {
+            "node": "WC: If Empty",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: Limit 1": {
+      "main": [
+        [
+          {
+            "node": "WC: Pause",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: Pause": {
+      "main": [
+        [
+          {
+            "node": "WC: AI Editor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: AI Editor": {
+      "main": [
+        [
+          {
+            "node": "WC: Build Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: Build Payload": {
+      "main": [
+        [
+          {
+            "node": "WC: Platform Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: PG Capture Slot": {
+      "main": [
+        []
+      ]
+    },
+    "WC: Platform Router": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow Publisher-TG",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Execute Workflow Publisher-MAX",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WC: PG Log Failed Route",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: PG Log Failed Route": {
+      "main": [
+        [
+          {
+            "node": "WC: TG Alert No Destination",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: Execute Worker-Core": {
+      "main": [
+        [
+          {
+            "node": "WC: PG Get Sources",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow Publisher-TG": {
+      "main": [
+        [
+          {
+            "node": "WC: PG Capture Slot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow Publisher-MAX": {
+      "main": [
+        [
+          {
+            "node": "WC: PG Capture Slot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: If Empty": {
+      "main": [
+        [
+          {
+            "node": "WC: Limit 1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WC: TG Alert No Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: PG Log Parser Failed": {
+      "main": [
+        [
+          {
+            "node": "WC: TG Alert Parser Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: AI Censor Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "WC: AI Censor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: AI Censor Chat Model FB": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "WC: AI Censor",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "WC: AI Editor Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "WC: AI Editor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WC: AI Editor Chat Model FB": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "WC: AI Editor",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "WC: AI Editor Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "WC: AI Editor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "KCkrFUVKtx9SgAad"
+  },
+  "versionId": "5de734ac-124e-445b-8f11-2e07edc7172f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": ""
+  },
+  "id": "ljENcdgPsXWEabfx",
+  "tags": []
+}

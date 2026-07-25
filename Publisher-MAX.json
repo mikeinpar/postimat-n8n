@@ -1,0 +1,716 @@
+{
+  "name": "Publisher-MAX",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "channel_id",
+              "type": "number"
+            },
+            {
+              "name": "max_chat_id"
+            },
+            {
+              "name": "final_text"
+            },
+            {
+              "name": "title"
+            },
+            {
+              "name": "selected_post_id",
+              "type": "number"
+            },
+            {
+              "name": "source_id",
+              "type": "number"
+            },
+            {
+              "name": "source_url"
+            },
+            {
+              "name": "image_url"
+            },
+            {
+              "name": "video_url"
+            }
+          ]
+        }
+      },
+      "id": "ae5f272e-43a6-4a12-abb6-a8f59073c82c",
+      "typeVersion": 1.1,
+      "name": "Execute Publisher-MAX",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -496,
+        976
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "19eef0eb-4568-4db2-ba13-77b164428908",
+              "leftValue": "={{ $json.video_url !== \"\" && $json.video_url !== null }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -48,
+        976
+      ],
+      "id": "fa1eb565-7315-4d65-b923-67376a49a449",
+      "name": "PUB-MAX: Media Router"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "sources",
+          "mode": "list",
+          "cachedResultName": "sources"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Execute Publisher-MAX').all()[0].json.source_id }}",
+            "last_processed_id": "={{ $('Execute Publisher-MAX').all()[0].json.selected_post_id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "channel_id",
+              "displayName": "channel_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "user_id",
+              "displayName": "user_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "source_url",
+              "displayName": "source_url",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "last_processed_id",
+              "displayName": "last_processed_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "public_id",
+              "displayName": "public_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1200,
+        992
+      ],
+      "id": "8430c837-f62c-4f0b-ae5a-92c7093723d5",
+      "name": "PUB-MAX: PG Update Source",
+      "credentials": {
+        "postgres": {
+          "id": "wkLZ9j8s0cYjutRB",
+          "name": "content_saas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "posts_queue",
+          "mode": "list",
+          "cachedResultName": "posts_queue"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "origin_post_id": "={{ $('Execute Publisher-MAX').all()[0].json.selected_post_id }}",
+            "scheduled_time": "={{ new Date().toISOString() }}",
+            "source_url": "={{ $('Execute Publisher-MAX').all()[0].json.source_url }}",
+            "payload": "={{ JSON.stringify($('Execute Publisher-MAX').all()[0].json) }}",
+            "status": "SUCCESS",
+            "channel_id": "={{ $('Execute Publisher-MAX').all()[0].json.channel_id }}",
+            "published_post_id": "={{ $('PUB-MAX: Extract MsgId').first().json.published_post_id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "channel_id",
+              "displayName": "channel_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source_url",
+              "displayName": "source_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "origin_post_id",
+              "displayName": "origin_post_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "published_post_id",
+              "displayName": "published_post_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "payload",
+              "displayName": "payload",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "scheduled_time",
+              "displayName": "scheduled_time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "public_id",
+              "displayName": "public_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1360,
+        992
+      ],
+      "id": "2900bf38-4c2a-474b-85ad-5f0f42c9e366",
+      "name": "PUB-MAX: PG Log Post",
+      "credentials": {
+        "postgres": {
+          "id": "wkLZ9j8s0cYjutRB",
+          "name": "content_saas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.all()[0];\n\n// Убираем ВСЕ whitespace-символы включая unicode (не только обычный пробел)\nconst rawId = String(item.json.max_chat_id || '');\nitem.json.max_chat_id = parseInt(rawId.replace(/[^0-9\\-]/g, ''));\n\nreturn [item];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -256,
+        976
+      ],
+      "id": "37f7fb5b-8c0d-416b-ac13-9ba4d57416a3",
+      "name": "PUB-MAX: Code Prep Fields"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.video_url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "data_video"
+            }
+          },
+          "proxy": "={{ $env.PROXY_URL }}"
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        160,
+        912
+      ],
+      "id": "137953dc-7833-4e37-ae2d-1515743e584a",
+      "name": "PUB-MAX: Dwnld vid"
+    },
+    {
+      "parameters": {
+        "sendTo": "chat",
+        "chatId": "={{ $json.max_chat_id }}",
+        "text": "={{ \"**\" + $('Execute Publisher-MAX').all()[0].json.title + \"**\\n\\n\" + $('Execute Publisher-MAX').all()[0].json.final_text }}",
+        "format": "markdown",
+        "additionalFields": {
+          "attachments": {
+            "attachment": [
+              {
+                "binaryProperty": "data_video",
+                "type": "video"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-max.max",
+      "typeVersion": 1,
+      "position": [
+        544,
+        912
+      ],
+      "id": "9ca58660-88bd-4676-ab14-90e0138cae5f",
+      "name": "PUB-MAX: Send vid mess",
+      "credentials": {
+        "maxApi": {
+          "id": "OQ7VjnS89ihdnxFq",
+          "name": "Max bot"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "sendTo": "chat",
+        "chatId": "={{ $json.max_chat_id }}",
+        "text": "={{ \"**\" + $('Execute Publisher-MAX').all()[0].json.title + \"**\\n\\n\" + $('Execute Publisher-MAX').all()[0].json.final_text }}",
+        "format": "markdown",
+        "additionalFields": {
+          "attachments": {
+            "attachment": [
+              {
+                "binaryProperty": "data_image"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-max.max",
+      "typeVersion": 1,
+      "position": [
+        544,
+        1072
+      ],
+      "id": "154df74f-c2a1-4a07-a48b-a66584d61797",
+      "name": "PUB-MAX: Send img mess",
+      "credentials": {
+        "maxApi": {
+          "id": "OQ7VjnS89ihdnxFq",
+          "name": "Max bot"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.image_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "data_image"
+            }
+          },
+          "proxy": "={{ $env.PROXY_URL }}"
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        160,
+        1072
+      ],
+      "id": "73553ac1-58ff-4b4b-8497-0595b98d0d49",
+      "name": "PUB-MAX: Dwnld img"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Переименовываем файл изображения в короткое имя.\n// URL cdn4.telesco.pe содержит огромный токен → ENAMETOOLONG в MAX-ноде.\nconst item = $input.all()[0];\nif (item.binary && item.binary.data_image) {\n    item.binary.data_image.fileName = 'image.jpg';\n    item.binary.data_image.mimeType = item.binary.data_image.mimeType || 'image/jpeg';\n}\nreturn [item];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        368,
+        1072
+      ],
+      "id": "828bb3d3-767e-4fd1-ba69-7866a17a8ce3",
+      "name": "PUB-MAX: Fix Img Name"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ffd085ea-20af-43a7-8bf4-02b20c886872",
+              "name": "published_post_id",
+              "value": "={{ $json.message?.body?.mid }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        800,
+        992
+      ],
+      "id": "02d2b197-6581-4002-bd19-108574e3b383",
+      "name": "PUB-MAX: Extract MsgId"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "753cf091-bc07-4047-bc80-59e9501df1aa",
+              "leftValue": "={{ $json.published_post_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1008,
+        1152
+      ],
+      "id": "584ed606-f6a2-436a-bc43-51f1ea345eb7",
+      "name": "PUB-MAX: If Send OK"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO posts_queue (channel_id, source_url, origin_post_id, status, payload, scheduled_time)\nVALUES (\n  {{ $('Execute Publisher-MAX').first().json.channel_id }},\n  '{{ $('Execute Publisher-MAX').first().json.source_url }}',\n  {{ $('Execute Publisher-MAX').first().json.selected_post_id }},\n  'FAILED_SEND',\n  '{{ JSON.stringify($('Execute Publisher-MAX').first().json) }}'::jsonb,\n  NOW()\n)",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1200,
+        1232
+      ],
+      "id": "aceacf67-7aad-4f7d-a1da-70ffb5c0937e",
+      "name": "PUB-MAX: PG Log Send Failed",
+      "credentials": {
+        "postgres": {
+          "id": "wkLZ9j8s0cYjutRB",
+          "name": "content_saas"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Execute Publisher-MAX": {
+      "main": [
+        [
+          {
+            "node": "PUB-MAX: Code Prep Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PUB-MAX: Media Router": {
+      "main": [
+        [
+          {
+            "node": "PUB-MAX: Dwnld vid",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "PUB-MAX: Dwnld img",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PUB-MAX: PG Update Source": {
+      "main": [
+        [
+          {
+            "node": "PUB-MAX: PG Log Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PUB-MAX: Code Prep Fields": {
+      "main": [
+        [
+          {
+            "node": "PUB-MAX: Media Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PUB-MAX: Dwnld vid": {
+      "main": [
+        [
+          {
+            "node": "PUB-MAX: Send vid mess",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PUB-MAX: Send vid mess": {
+      "main": [
+        [
+          {
+            "node": "PUB-MAX: Extract MsgId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PUB-MAX: Send img mess": {
+      "main": [
+        [
+          {
+            "node": "PUB-MAX: Extract MsgId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PUB-MAX: Dwnld img": {
+      "main": [
+        [
+          {
+            "node": "PUB-MAX: Fix Img Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PUB-MAX: Fix Img Name": {
+      "main": [
+        [
+          {
+            "node": "PUB-MAX: Send img mess",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PUB-MAX: Extract MsgId": {
+      "main": [
+        [
+          {
+            "node": "PUB-MAX: If Send OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PUB-MAX: If Send OK": {
+      "main": [
+        [
+          {
+            "node": "PUB-MAX: PG Update Source",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "PUB-MAX: PG Log Send Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "KCkrFUVKtx9SgAad"
+  },
+  "versionId": "b48c471a-b9fe-46d5-8d2d-b84b526cbdda",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": ""
+  },
+  "id": "TMntEWBkIryYT60H",
+  "tags": []
+}

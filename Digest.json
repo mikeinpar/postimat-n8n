@@ -1,0 +1,134 @@
+{
+  "name": "Digest",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c8952ebe-83ac-4b4d-aee2-0c919f3061e4",
+      "name": "DIG: Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  c.id AS channel_id,\n  COALESCE(c.tg_chat_id, c.max_chat_id) AS chat_id,\n  CASE WHEN c.tg_chat_id IS NOT NULL THEN 'TG' ELSE 'MAX' END AS platform,\n  COUNT(CASE WHEN p.status = 'SUCCESS' THEN 1 END) AS success_count,\n  COUNT(CASE WHEN p.status LIKE 'FAILED%' THEN 1 END) AS failed_count,\n  COUNT(CASE WHEN p.status LIKE 'SKIPPED%' THEN 1 END) AS skipped_count\nFROM channels c\nLEFT JOIN posts_queue p\n  ON p.channel_id = c.id\n  AND p.created_at > NOW() - INTERVAL '24 hours'\nWHERE c.is_active = true\nGROUP BY c.id, c.tg_chat_id, c.max_chat_id\nORDER BY c.id",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        208,
+        0
+      ],
+      "id": "95af8379-5cd2-4609-b8b4-0f5bf5791733",
+      "name": "DIG: PG Get Stats",
+      "credentials": {
+        "postgres": {
+          "id": "wkLZ9j8s0cYjutRB",
+          "name": "content_saas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all();\nconst date = new Date().toLocaleDateString('ru-RU', { timeZone: 'Europe/Moscow' });\n\nlet text = `📊 *Дайджест за ${date}*\\n\\n`;\n\nfor (const row of rows) {\n  const r = row.json;\n  const total = (r.success_count || 0) + (r.failed_count || 0) + (r.skipped_count || 0);\n  const status = r.failed_count > 0 ? '⚠️' : '✅';\n  text += `${status} *[${r.platform}]* \\`${r.chat_id}\\`\\n`;\n  text += `  ✅ ${r.success_count}  ❌ ${r.failed_count}  ⏭ ${r.skipped_count}  / всего ${total}\\n\\n`;\n}\n\nif (rows.length === 0) {\n  text += '_Нет активных каналов_';\n}\n\nreturn [{ json: { text } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "e9fae124-98d6-4444-ba1d-523c32833afd",
+      "name": "DIG: Build Digest"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.ADMIN_CHAT_ID }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "Markdown"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "79909212-302b-482d-850e-f5cff4ea837c",
+      "name": "DIG: TG Send",
+      "webhookId": "f6f04f99-efbd-44bf-b481-5ae508266ae2",
+      "credentials": {
+        "telegramApi": {
+          "id": "A93ifa15DpBnN7Eg",
+          "name": "testgifterist_bot"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "DIG: Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "DIG: PG Get Stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DIG: PG Get Stats": {
+      "main": [
+        [
+          {
+            "node": "DIG: Build Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DIG: Build Digest": {
+      "main": [
+        [
+          {
+            "node": "DIG: TG Send",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "KCkrFUVKtx9SgAad"
+  },
+  "versionId": "9a050f2c-0a0e-4eb2-8d2a-d7cfe6182d66",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": ""
+  },
+  "id": "9qR8VRBNdmthARJ8",
+  "tags": []
+}

@@ -1,0 +1,744 @@
+{
+  "name": "Onboarding-Helpers",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, user_id, max_user_id, last_chat_id, current_step\nFROM bot_sessions\nWHERE id = {{ $json.session_id }}\nLIMIT 1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        848,
+        -176
+      ],
+      "id": "45afb6bf-a009-4348-90df-07cd5053ce3c",
+      "name": "OH: PG SELECT Session",
+      "credentials": {
+        "postgres": {
+          "id": "wkLZ9j8s0cYjutRB",
+          "name": "content_saas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id AS log_id, message_id\nFROM bot_messages_log\nWHERE session_id = {{ $('OH: CODE Global Config').item.json.session_id }}\n  AND is_active = true\nORDER BY created_at DESC\nLIMIT 1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1056,
+        -176
+      ],
+      "id": "d168d508-5038-4105-8903-fc209fda8477",
+      "name": "OH: PG SELECT Active msg",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wkLZ9j8s0cYjutRB",
+          "name": "content_saas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8e9746d7-a878-460a-8f4f-2720f7fc0717",
+              "leftValue": "={{ $json.found }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "1d4da872-1407-4537-8340-bbb71e55e33a",
+              "leftValue": "={{ $json.close_previous }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1472,
+        -176
+      ],
+      "id": "3bf1babd-dbf5-467d-82c3-5c7a6aa59528",
+      "name": "OH: IF Is active msg found"
+    },
+    {
+      "parameters": {
+        "operation": "editMessage",
+        "messageId": "={{ $json.message_id }}",
+        "text": "={{ $('OH: CODE Check active msg').item.json.previous_summary || '—' }}",
+        "clearAttachments": true
+      },
+      "type": "n8n-nodes-max.max",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        -304
+      ],
+      "id": "d75f2d70-3b7d-44b0-91cd-4ce6dbcafe0f",
+      "name": "OH: MAX editMsg Close prev",
+      "credentials": {
+        "maxApi": {
+          "id": "OQ7VjnS89ihdnxFq",
+          "name": "Max bot"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE bot_messages_log\nSET is_active = false\nWHERE session_id = $1 AND is_active = true",
+        "options": {
+          "queryReplacement": "={{ $('OH: CODE Global Config').item.json.session_id }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1888,
+        -304
+      ],
+      "id": "ba2efcf1-0e43-493c-9fff-f96c5f939bac",
+      "name": "OH: PG UPDATE Close log",
+      "credentials": {
+        "postgres": {
+          "id": "wkLZ9j8s0cYjutRB",
+          "name": "content_saas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst config = $('OH: CODE Global Config').first().json;\nconst payload = typeof config.payload === 'string'\n  ? JSON.parse(config.payload)\n  : config.payload;\n\nconst close_previous   = payload.close_previous ?? true;\nconst previous_summary = payload.previous_summary || '✓ Выбрано: —';\n\nif (!items.length || !items[0].json.log_id) {\n  return [{ json: { found: false, log_id: null, message_id: null, close_previous, previous_summary } }];\n}\n\nreturn [{ json: {\n  found:      true,\n  log_id:     items[0].json.log_id,\n  message_id: items[0].json.message_id,\n  close_previous,\n  previous_summary,\n}}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        -176
+      ],
+      "id": "3787eebd-ea22-4831-a7a7-fa8da6856d66",
+      "name": "OH: CODE Check active msg"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nlet payload = input.payload;\nif (typeof payload === 'string') {\n  try { payload = JSON.parse(payload); }\n  catch (e) { payload = {}; }\n}\nif (payload == null || typeof payload !== 'object') payload = {};\nconst ERROR_TXT = {\n  TXT_CHANNEL_FORWARD_INVALID:\n    \"⚠️ Это не пересылка из канала. Перешлите сообщение из вашего канала.\\n\\n\",\n  TXT_CHANNEL_NOT_CHANNEL:\n    \"⚠️ Это не канал. Подключить группу или чат невозможно — перешлите сообщение из канала.\\n\\n\",\n  TXT_CHANNEL_NO_RIGHTS:\n    \"⚠️ Бот не может публиковать в этом канале.\\n\\nДобавьте бота администратором с правом постинга и перешлите сообщение из канала снова.\\n\\n\",\n  TXT_PROMPT_EMPTY:\n    \"✏️ Кажется, ты ничего не написал.\\n\\nПопробуй ещё раз — введи текст своего промпта.\\n\\n\",\n  TXT_PROMPT_TOO_LONG:\n    \"📏 Текст слишком длинный (максимум 500 символов).\\n\\nСократи сообщение и отправь снова.\\n\\n\",\n  TXT_PROMPT_FORBIDDEN:\n    \"🚫 Сообщение содержит недопустимые символы или конструкции.\\n\\nПереформулируй запрос и попробуй снова.\\n\\n\",\n  TXT_HOURS_INVALID:\n    \"🕐 Неверный формат. Отправьте время как 0235, 02 35 или 02:35 (часы 00–23, минуты 00–59).\\nНесколько — каждое с новой строки или через запятую.\\n\\n\",\n  TXT_HOURS_TOO_MANY:\n    \"📊 Слишком много времён (максимум 10 публикаций в день). Сократите список.\\n\\n\",\n  PRIVATE:\n    \"⚠️ Это приватная ссылка-приглашение. Бот читает только публичные каналы — пришлите @username или ссылку вида t.me/name.\",\n  BUSY:\n    \"⏳ Сначала подтвердите или пропустите текущий канал — используйте кнопки выше.\\n\\n\",\n  INVALID:\n    \"⚠️ Неверный формат ссылки. Отправьте @username или ссылку на публичный Telegram-канал.\\n\\n\",\n  DUP:\n    \"⚠️ Этот канал уже есть в вашем списке.\\n\\n\",\n  LIMIT:\n    \"⚠️ Достигнут лимит 10 источников.\\n\\n\",\n  DEAD:\n    \"⚠️ Канал недоступен через веб-версию Telegram (/s/). Убедитесь, что канал публичный.\\n\\n\",\n  STALE:\n    \"⚠️ Канал малоактивен — менее 3 постов за последние 7 дней. Выберите более активный канал.\\n\\n\",\n  INFRA_RETRY:\n    \"⚠️ Временная ошибка при проверке. Попробуйте отправить ссылку ещё раз.\\n\\n\",\n  NEED_MORE:\n    \"⚠️ Добавьте ещё источников — минимум 3.\\n\\n\",\n  CHANNEL_ALREADY_PENDING:\n  \"⏳ Этот канал уже отправлен на проверку, ожидайте активации.\\n\\n\",\nCHANNEL_ALREADY_ACTIVE:\n  \"✅ Этот канал уже подключён и работает. Перешлите другой канал.\\n\\n\",\nCHANNEL_TAKEN:\n  \"🔒 Этот канал уже подключён другим аккаунтом. Обратитесь в поддержку.\\n\\n\",\n};\nconst TXT = {\n  START:\n    \"👋 <b>Добро пожаловать!</b>\\n\\n\" +\n    \"Этот бот поможет настроить автоматическую публикацию контента в ваш канал.\\n\\n\" +\n    \"Перед началом ознакомьтесь с <a href=\\\"https://yoursite.com/policy\\\">политикой обработки данных</a> \" +\n    \"и нажмите кнопку ниже.\",\n  CHANNEL_FORWARD_REQUEST:\n    \"{error_text}\" +\n    \"📢 <b>Подключение канала</b>\\n\\n\" +\n    \"Перешлите боту любое сообщение из вашего канала.\\n\\n\" +\n    \"⚠️ Бот должен быть добавлен в канал как <b>администратор</b>.\",\n  PROMPT_CENSOR_INPUT:\n    \"{error_text}\" +\n    \"🛡 <b>Фильтр контента</b>\\n\\n\" +\n    \"Опишите, какой контент <b>НЕ</b> нужно публиковать.\\n\" +\n    \"Например: <i>рекламные посты, политика, 18+</i>\\n\\n\" +\n    \"Напишите ваши требования (до 500 символов):\",\n  PROMPT_EDITOR_INPUT:\n    \"{error_text}\" +\n    \"✍️ <b>Стиль редактирования</b>\\n\\n\" +\n    \"Опишите, как должен выглядеть итоговый пост.\\n\" +\n    \"Например: <i>краткий пересказ, без воды, деловой стиль</i>\\n\\n\" +\n    \"Напишите ваши требования (до 500 символов):\",\n  TIMEZONE_PICK:\n    \"🌍 <b>Часовой пояс</b>\\n\\n\" +\n    \"Выберите ваш часовой пояс — от него зависит расписание публикаций:\",\n  POSTING_HOURS_INPUT:\n    \"{error_text}\" +\n    \"🕐 <b>Время публикаций</b>\\n\\n\" +\n    \"Отправьте время в формате 0235, 02 35 или 02:35 (24 часа).\\n\" +\n    \"Несколько значений — каждое с новой строки или через запятую.\\n\\n\" +\n    \"Пример:\\n09:00\\n14:30\\n20:00\\n(или: 09:00, 14:30, 20:00)\\n\\n\" +\n    \"Максимум 24 публикации в день.\",\n  POSTING_HOURS_CONFIRM:\n    \"🕐 <b>Проверьте время публикаций</b>\\n\\n\" +\n    \"Распознано: {hours_list}\\n\\n\" +\n    \"Всё верно?\",\n  SOURCES_INPUT:\n    \"{status_text}\\n\\n{error_text}\" +\n    \"📡 <b>Источники контента</b>\\n\\n\" +\n    \"Добавьте Telegram-каналы, из которых бот будет брать посты.\\n\" +\n    \"Минимум 3 источника.\\n\\n\" +\n    \"Отправьте ссылку или @username канала:\",\n  SOURCES_APPROVE_CARD:\n    \"{card_text}\",\n  SOURCES_FULL:\n    \"{status_text}\\n\\n\" +\n    \"📡 <b>Источники контента</b>\\n\\n\" +\n    \"✅ Достигнут максимум — 10 источников.\\n\" +\n    \"Нажмите «Готово», чтобы продолжить настройку.\",\n  FINAL_SAVE:\n    \"⏳ Завершаем настройку, подождите...\",\n  // ← E1: параметризованная квитанция\n  COMPLETED:\n    \"✅ <b>Настройка завершена!</b>\\n\\n\" +\n    \"📌 Название: {title}\\n\" +\n    \"📡 Источники: {sources_list}\\n\" +\n    \"🕐 Постинг: {posting_hours}\\n\" +\n    \"🌍 Часовой пояс: {timezone}\\n\\n\" +\n    \"{prompts_status}\",\n  // ← E1: терминальный экран ошибки\n  FINAL_ERROR:\n    \"⚠️ Не удалось сохранить настройки.\\n\\nПожалуйста, обратитесь в поддержку — мы уже получили уведомление и разберёмся.\",\n  CHANNEL_ALREADY_CONNECTED:\n  \"⚠️ <b>Этот канал уже подключён.</b>\\n\\n\" +\n  \"Добавить новые источники или ещё один канал можно будет в настройках бота.\",\n  \n  MAIN_MENU:\n  \"👋 <b>Главное меню</b>{subscription_end}\\n\\n\" +\n  \"Выберите действие:\",\n\nMAIN_MENU_EMPTY:\n  \"👋 <b>Главное меню</b>{subscription_end}\\n\\n\" +\n  \"У вас пока нет подключённых каналов.\\n\\n\" +\n  \"Нажмите «➕ Создать канал», чтобы начать.\",\n\nMENU_CHANNELS_LIST:\n  \"📋 <b>Мои каналы</b>\\n\\n\" +\n  \"Выберите канал для управления:\",\n\nMENU_CHANNEL_CARD:\n  \"📢 <b>{title}</b>\\n\\n\" +\n  \"🆔 MAX ID: <code>{max_chat_id}</code>\\n\" +\n  \"📊 Модерация: {status}\\n\" +\n  \"🔌 Активен: {is_active}\\n\" +\n  \"🕐 Расписание: {posting_hours}\\n\" +\n  \"🌍 Часовой пояс: {timezone}\\n\" +\n  \"📡 Источники: {sources}\\n\" +\n  \"🛡 Фильтр: {filter_prompt}\\n\" +\n  \"✍️ Стиль: {generation_prompt}\\n\" +\n  \"📅 Добавлен: {created_at}\",\n\nMENU_ACTIVATE_LIMIT:\n  \"⚠️ <b>Нет активных слотов</b>\\n\\n\" +\n  \"Ваш текущий тариф не позволяет включить больше каналов.\\n\\n\" +\n  \"Для увеличения лимита — напишите нам 👇\",\n\nMENU_CREATE_LIMIT:\n  \"⚠️ <b>Достигнут лимит каналов</b>\\n\\n\" +\n  \"Вы уже добавили максимальное количество каналов.\\n\\n\" +\n  \"Для увеличения лимита обратитесь в поддержку.\",\n\nSUPPORT_ASK:\n  \"❓ <b>Поддержка</b>\\n\\n\" +\n  \"Опишите ваш вопрос или проблему — мы ответим как можно скорее.\\n\\n\" +\n  \"Напишите сообщение:\",\n\nSUPPORT_SENT:\n  \"✅ <b>Сообщение отправлено</b>\\n\\n\" +\n  \"Мы получили ваш запрос и скоро свяжемся с вами.\",\n};\nconst KEYBOARDS = {\n  START: {\n    buttons: [\n      [{ text: \"✅ Принять политику и продолжить\", type: \"callback\", payload: \"policy_accept\", intent: \"positive\" }]\n    ]\n  },\n  TIMEZONE_PICK: {\n    buttons: [\n      [{ text: \"🌍 Всемирное (UTC+0)\",      type: \"callback\", payload: \"UTC\",                  intent: \"default\" }],\n      [{ text: \"🕑 Калининград (UTC+2)\",    type: \"callback\", payload: \"Europe/Kaliningrad\",   intent: \"default\" }],\n      [{ text: \"🕒 Москва (UTC+3)\",         type: \"callback\", payload: \"Europe/Moscow\",        intent: \"default\" }],\n      [{ text: \"🕓 Самара (UTC+4)\",         type: \"callback\", payload: \"Europe/Samara\",        intent: \"default\" }],\n      [{ text: \"🕔 Екатеринбург (UTC+5)\",   type: \"callback\", payload: \"Asia/Yekaterinburg\",  intent: \"default\" }],\n      [{ text: \"🕕 Омск (UTC+6)\",           type: \"callback\", payload: \"Asia/Omsk\",           intent: \"default\" }],\n      [{ text: \"🕖 Новосибирск (UTC+7)\",    type: \"callback\", payload: \"Asia/Novosibirsk\",    intent: \"default\" }],\n      [{ text: \"🕖 Красноярск (UTC+7)\",     type: \"callback\", payload: \"Asia/Krasnoyarsk\",    intent: \"default\" }],\n      [{ text: \"🕗 Иркутск (UTC+8)\",        type: \"callback\", payload: \"Asia/Irkutsk\",        intent: \"default\" }],\n      [{ text: \"🕘 Якутск (UTC+9)\",         type: \"callback\", payload: \"Asia/Yakutsk\",        intent: \"default\" }],\n      [{ text: \"🕙 Владивосток (UTC+10)\",   type: \"callback\", payload: \"Asia/Vladivostok\",    intent: \"default\" }],\n      [{ text: \"🕚 Магадан (UTC+11)\",       type: \"callback\", payload: \"Asia/Magadan\",        intent: \"default\" }],\n      [{ text: \"🕛 Камчатка (UTC+12)\",      type: \"callback\", payload: \"Asia/Kamchatka\",      intent: \"default\" }],\n    ]\n  },\n  POSTING_HOURS_CONFIRM: {\n    buttons: [\n      [{ text: \"✅ Подтвердить\",   type: \"callback\", payload: \"posting_hours_confirm\", intent: \"positive\" }],\n      [{ text: \"✏️ Ввести заново\", type: \"callback\", payload: \"posting_hours_redo\",    intent: \"default\"  }],\n    ]\n  },\n  MAIN_MENU: {\n  buttons: [\n    [{ text: \"➕ Создать канал\", type: \"callback\", payload: \"menu_create_channel\", intent: \"positive\" }],\n    [{ text: \"📋 Мои каналы\",    type: \"callback\", payload: \"menu_my_channels\",    intent: \"default\"  }],\n    [{ text: \"❓ Помощь\",        type: \"callback\", payload: \"menu_help\",           intent: \"default\"  }],\n  ]\n},\n  // ← E1: COMPLETED и FINAL_ERROR — клавиатур нет (ключи отсутствуют намеренно)\n};\nconst ADMIN_TEMPLATES = {\n  ADMIN_NEW_USER:\n    \"🆕 Новый пользователь\\nID: {max_user_id}\\nИмя: {first_name} {last_name}\\nUsername: {username}\",\n  // ← E1: расширен\n  ADMIN_CHANNEL_READY: (d) =>\n    `✅ Канал готов\\n\\n` +\n    `Название: ${d.title}\\n` +\n    `max_chat_id: ${d.max_chat_id}\\n` +\n    `Источники: ${Array.isArray(d.sources) ? d.sources.map(s => s.url).join(', ') : d.sources}\\n` +\n    `Постинг: ${d.posting_hours}\\n` +\n    `Часовой пояс: ${d.timezone}\\n\\n` +\n    `Фильтр:\\n${d.filter_prompt}\\n\\n` +\n    `Генерация:\\n${d.generation_prompt}`,\n  // ← E1: новый шаблон\n  ADMIN_FINAL_ERROR: (d) =>\n    `🚨 Ошибка FINAL_SAVE\\n\\n` +\n    `max_chat_id: ${d.max_chat_id}\\n` +\n    `Ошибка: ${d.error_message}`,\n  \n  ADMIN_SUPPORT_REQUEST: (d) =>\n  `🆘 Запрос в поддержку\\n\\n` +\n  `User ID: ${d.max_user_id}\\n` +\n  `Имя: ${d.first_name}\\n` +\n  `Username: ${d.username}\\n\\n` +\n  `Сообщение:\\n${String(d.text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}`,\n  \n};\nreturn [{\n  json: {\n    action:        input.action,\n    session_id:    input.session_id,\n    payload:       payload,\n    TXT,\n    ERROR_TXT,\n    KEYBOARDS,\n    ADMIN_TEMPLATES,\n    ADMIN_CHAT_ID: $env.ADMIN_CHAT_ID,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        16
+      ],
+      "id": "1105d1a3-a8f3-4258-a0ab-e3501c7578fe",
+      "name": "OH: CODE Global Config"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "send_step",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "abd3c11e-eaac-45e3-9483-a030cf9d2c3d"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "send_step"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6f89f8f4-2d83-4ced-bfbc-932fb2626cbc",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "save_context",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "save_context"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c2440d04-5c2a-4e77-8665-ed782358393b",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "notify_admin",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "notify_admin"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "none"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        624,
+        0
+      ],
+      "id": "16b50d29-a4b9-4d4f-b115-468b0dbdba66",
+      "name": "OH: SWITCH Action"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://platform-api.max.ru/messages?user_id={{ $json.max_user_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.request_body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2352,
+        -160
+      ],
+      "id": "8c9a151e-3aaf-494b-9d09-4f0acb228ce4",
+      "name": "OH: HTTP Send msg",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "aItLbsGCx0iCQlNC",
+          "name": "Max bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO bot_messages_log (session_id, max_user_id, chat_id, message_id, step, has_keyboard, is_active)\nVALUES (\n  {{ $('OH: CODE Prep step').item.json.session_id }},\n  {{ $('OH: CODE Prep step').item.json.max_user_id }},\n  '{{ $('OH: CODE Prep step').item.json.chat_id }}',\n  '{{ $json.message?.body?.mid || $json.message?.message_id || $json.message?.id }}',\n  '{{ $('OH: CODE Prep step').item.json.next_step }}',\n  {{ $('OH: CODE Prep step').item.json.has_keyboard }},\n  {{ $('OH: CODE Prep step').item.json.has_keyboard }}\n)\nRETURNING id, message_id",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2560,
+        -160
+      ],
+      "id": "97a39377-c73d-4f0e-9a16-ecd3ff092ae1",
+      "name": "OH: PG INSERT Msg log",
+      "credentials": {
+        "postgres": {
+          "id": "wkLZ9j8s0cYjutRB",
+          "name": "content_saas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE bot_sessions\nSET\n  last_bot_message_id = $1,\n  current_step        = $2,\n  updated_at          = NOW(),\n  expires_at          = NOW() + INTERVAL '24 hours'\nWHERE id = $3",
+        "options": {
+          "queryReplacement": "={{ $json.message_id }},{{ $('OH: CODE Prep step').item.json.step_to_persist }},{{ $('OH: CODE Prep step').item.json.session_id }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2768,
+        -160
+      ],
+      "id": "8dec35a5-5ba5-4cbb-a52e-875497b31dfb",
+      "name": "OH: PG UPDATE Session",
+      "credentials": {
+        "postgres": {
+          "id": "wkLZ9j8s0cYjutRB",
+          "name": "content_saas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE bot_sessions\nSET context = COALESCE(context, '{}'::jsonb) || $1::jsonb,\n    updated_at = NOW(),\n    expires_at = NOW() + INTERVAL '24 hours'\nWHERE id = $2;",
+        "options": {
+          "queryReplacement": "={{ JSON.stringify((typeof $json.payload === 'string' ? JSON.parse($json.payload) : $json.payload).merge_data) }},\n{{ $json.session_id }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        848,
+        16
+      ],
+      "id": "c0f46373-e44c-4955-a535-a42bf8b069e5",
+      "name": "OH: PG UPDATE Context",
+      "credentials": {
+        "postgres": {
+          "id": "wkLZ9j8s0cYjutRB",
+          "name": "content_saas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4062fcdd-fbc7-4cfe-be21-c5430f3b9281",
+              "name": "success",
+              "value": true,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1056,
+        16
+      ],
+      "id": "ed6a6bc6-3f78-4169-8eda-a99fee814716",
+      "name": "OH: EDIT FIELDS Return B"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "13ff0bc7-3475-4a35-9345-83b63d6990e1",
+              "name": "success",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "c80ed50a-442f-4963-a9e4-614f8018aa38",
+              "name": "new_message_id",
+              "value": "={{ $('OH: PG INSERT Msg log').item.json.message_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2976,
+        -160
+      ],
+      "id": "7a75e3d4-9426-468e-a68d-1bae3ef980a8",
+      "name": "OH: EDIT FIELDS Return A"
+    },
+    {
+      "parameters": {
+        "jsCode": "const config = $('OH: CODE Global Config').first().json;\nconst { template_name, data } = config.payload;\n\nconst tmpl = config.ADMIN_TEMPLATES[template_name];\nlet text;\n\nif (typeof tmpl === 'function') {\n  text = tmpl(data || {});\n} else if (typeof tmpl === 'string') {\n  text = tmpl;\n  for (const [k, v] of Object.entries(data || {})) {\n    text = text.replaceAll(`{${k}}`, String(v));\n  }\n} else {\n  text = '';\n}\n\nreturn [{\n  json: {\n    request_body: {\n      chat_id: Number(config.ADMIN_CHAT_ID),\n      text,\n      format: 'html',\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        848,
+        224
+      ],
+      "id": "0e879a3c-f75a-455b-9cac-41e7dbadbbb4",
+      "name": "OH: Code Prep admin msg"
+    },
+    {
+      "parameters": {
+        "jsCode": "const config  = $('OH: CODE Global Config').first().json;\nconst session = $('OH: PG SELECT Session').first().json;\nconst payload = typeof config.payload === 'string'\n  ? JSON.parse(config.payload)\n  : config.payload;\n\nconst next_step    = payload.next_step;\nconst dynamic_vars = payload.dynamic_vars || {};\n\n// Какой шаг реально записать в current_step (help/resume не двигают FSM)\nconst step_to_persist = payload.skip_step_update\n  ? session.current_step\n  : next_step;\n\n// Текст: опциональный префикс (resume) + текст целевого шага\nconst prefix = payload.prefix_key ? (config.TXT[payload.prefix_key] + '\\n\\n') : '';\nlet text = prefix + (config.TXT[next_step] || '');\n\n// Резолв ключей ERROR_TXT+ перенос строки\nif (dynamic_vars.error_text) {\n  const resolved = config.ERROR_TXT[dynamic_vars.error_text] ?? '';\n  dynamic_vars.error_text = resolved ? resolved + '\\n\\n' : '';\n}\ndynamic_vars.error_text  = dynamic_vars.error_text  ?? '';\n\n// Перенос строки после status_text\nconst rawStatus = dynamic_vars.status_text ?? '';\ndynamic_vars.status_text = rawStatus ? rawStatus + '\\n\\n' : ''\n\n// Подстановка переменных\nfor (const [k, v] of Object.entries(dynamic_vars)) {\n  text = text.replaceAll(`{${k}}`, String(v));\n}\n\nconst keyboardOverride = payload.keyboard_override || null;\nlet keyboard = keyboardOverride\n  ? keyboardOverride                // уже { buttons: [[...]] }, обёртка не нужна\n  : (config.KEYBOARDS[next_step] || null);\n// Кнопка \"В главное меню\" на экранах с ошибкой (только после принятия политики)\nif (dynamic_vars.error_text && session.user_id) {\n  const navButton = [{ text: \"↩️ В главное меню\", type: \"callback\", payload: \"nav_menu\", intent: \"default\" }];\n  if (keyboard && keyboard.buttons) {\n    keyboard = { buttons: [...keyboard.buttons, [navButton[0]]] };\n  } else {\n    keyboard = { buttons: [[navButton[0]]] };\n  }\n}\n\nconst chat_id  = Number(session.last_chat_id);  // MAX API ожидает number\n\nconst attachments = keyboard\n  ? [{ type: 'inline_keyboard', payload: { buttons: keyboard.buttons } }]\n  : [];\n\nreturn [{\n  json: {\n    next_step,\n    step_to_persist,\n    session_id:   config.session_id,\n    max_user_id:  session.max_user_id,\n    chat_id,\n    has_keyboard: keyboard !== null,\n    request_body: {\n      text,\n      format: 'html',\n      attachments,\n    },\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2144,
+        -160
+      ],
+      "id": "b2abba77-4e93-4c93-9e36-5f86e2218bea",
+      "name": "OH: CODE Prep step"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://platform-api.max.ru/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.request_body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1040,
+        672
+      ],
+      "id": "ee44f021-8da7-4d08-92e9-01b1afa2177d",
+      "name": "OH: HTTP Send Msg admin",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "6dWEKU1VBusyGCJf",
+          "name": "MAX Header Auth"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f6026a63-29ea-409b-9c41-734f6bac25f1",
+              "name": "success",
+              "value": true,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1248,
+        672
+      ],
+      "id": "d919078e-e27f-44c3-a17f-459e71bda93c",
+      "name": "OH: EDIT FIELDS Return C"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "action"
+            },
+            {
+              "name": "session_id",
+              "type": "number"
+            },
+            {
+              "name": "payload"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        16
+      ],
+      "id": "a6ef23bd-fcfb-43a9-9cd9-56bfa8275f7c",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.ADMIN_CHAT_ID }}",
+        "text": "={{ $json.request_body.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1056,
+        224
+      ],
+      "id": "c62657e4-c26f-417b-91d0-a3e8f5ddcae0",
+      "name": "OH: TG Send Admin",
+      "webhookId": "f6f04f99-efbd-44bf-b481-5ae508266ae2",
+      "credentials": {
+        "telegramApi": {
+          "id": "A93ifa15DpBnN7Eg",
+          "name": "testgifterist_bot"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OH: PG SELECT Session": {
+      "main": [
+        [
+          {
+            "node": "OH: PG SELECT Active msg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OH: PG SELECT Active msg": {
+      "main": [
+        [
+          {
+            "node": "OH: CODE Check active msg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OH: IF Is active msg found": {
+      "main": [
+        [
+          {
+            "node": "OH: MAX editMsg Close prev",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "OH: CODE Prep step",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OH: MAX editMsg Close prev": {
+      "main": [
+        [
+          {
+            "node": "OH: PG UPDATE Close log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OH: CODE Check active msg": {
+      "main": [
+        [
+          {
+            "node": "OH: IF Is active msg found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OH: CODE Global Config": {
+      "main": [
+        [
+          {
+            "node": "OH: SWITCH Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OH: SWITCH Action": {
+      "main": [
+        [
+          {
+            "node": "OH: PG SELECT Session",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "OH: PG UPDATE Context",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "OH: Code Prep admin msg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OH: PG UPDATE Close log": {
+      "main": [
+        [
+          {
+            "node": "OH: CODE Prep step",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OH: HTTP Send msg": {
+      "main": [
+        [
+          {
+            "node": "OH: PG INSERT Msg log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OH: PG INSERT Msg log": {
+      "main": [
+        [
+          {
+            "node": "OH: PG UPDATE Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OH: PG UPDATE Session": {
+      "main": [
+        [
+          {
+            "node": "OH: EDIT FIELDS Return A",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OH: PG UPDATE Context": {
+      "main": [
+        [
+          {
+            "node": "OH: EDIT FIELDS Return B",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OH: CODE Prep step": {
+      "main": [
+        [
+          {
+            "node": "OH: HTTP Send msg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OH: Code Prep admin msg": {
+      "main": [
+        [
+          {
+            "node": "OH: TG Send Admin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OH: HTTP Send Msg admin": {
+      "main": [
+        [
+          {
+            "node": "OH: EDIT FIELDS Return C",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "OH: CODE Global Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "KCkrFUVKtx9SgAad"
+  },
+  "versionId": "938f5aca-7afb-4e18-88a1-64d2bbc304c5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": ""
+  },
+  "id": "GxyPXUHb9ING9t6i",
+  "tags": []
+}

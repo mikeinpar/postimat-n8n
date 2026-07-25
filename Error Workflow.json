@@ -1,0 +1,66 @@
+{
+  "name": "Error Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9407510f-4ae9-4832-abdc-5dee3f963cd2",
+      "name": "ERR: Error Trigger"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.ADMIN_CHAT_ID }}",
+        "text": "=🔴 Ошибка в воркфлоу\n\n📋 Воркфлоу: {{ $json.workflow.name }}\n💥 Нода: {{ $json.error.node?.name || 'неизвестно' }}\n❌ Ошибка: {{ $json.error.message }}\n\n🔗 Execution: {{ $json.execution.url }}\n⏰ {{ new Date().toLocaleString('ru-RU', {timeZone: 'Europe/Moscow'}) }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "2ea9dbf8-65ad-4ca1-8197-c71214b9dd9e",
+      "name": "ERR: TG Alert",
+      "webhookId": "7f6782d5-1f9b-4b37-bb60-63dac6d83a79",
+      "credentials": {
+        "telegramApi": {
+          "id": "A93ifa15DpBnN7Eg",
+          "name": "testgifterist_bot"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "ERR: Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "ERR: TG Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2d52e4a6-369c-430b-a096-72ae10b6c59a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": ""
+  },
+  "id": "KCkrFUVKtx9SgAad",
+  "tags": []
+}
