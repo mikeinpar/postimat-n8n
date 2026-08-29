@@ -2,11 +2,18 @@
 
 Exported n8n workflows for a neuro auto-posting service that parses source
 channels, generates posts with an LLM, and publishes them to Telegram and MAX
-channels on a per-channel schedule. Shared here as a **portfolio artifact**.
+channels on a per-channel schedule.
 
-> These are **sanitized** exports. Every real secret was replaced with an
-> environment-variable reference — see [`.env.example`](.env.example). They will
-> not run until you recreate the credentials and env vars in your own n8n.
+> **What this is.** A sanitized export of a system that runs, published so the
+> design can be read: eight workflows, the two contours they form, and the
+> handoffs between them. It is **not an installable product** and there is no
+> setup script. Every real secret was replaced with an environment-variable
+> reference (see [`.env.example`](.env.example)), so nothing here runs until you
+> import the JSON into your own n8n and recreate the credentials it expects.
+
+> **The database side** lives in a separate repo:
+> [mikeinpar/postimat-mcp-server](https://github.com/mikeinpar/postimat-mcp-server),
+> a read-only MCP server over the Postgres these workflows write to.
 
 ## Two contours
 
