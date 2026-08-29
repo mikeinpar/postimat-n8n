@@ -1,17 +1,17 @@
-# NeuroPosting — n8n workflows (sanitized)
+# NeuroPosting: n8n workflows
 
 Exported n8n workflows for a neuro auto-posting service that parses source
 channels, generates posts with an LLM, and publishes them to Telegram and MAX
 channels on a per-channel schedule.
 
-> **What this is.** A sanitized export of a system that runs, published so the
-> design can be read: eight workflows, the two contours they form, and the
-> handoffs between them. It is **not an installable product** and there is no
+> These eight workflows are a sanitized export of a system that runs. They are
+> published so the design can be read: the two contours the workflows form, and
+> the handoffs between them. This is not an installable product and there is no
 > setup script. Every real secret was replaced with an environment-variable
 > reference (see [`.env.example`](.env.example)), so nothing here runs until you
 > import the JSON into your own n8n and recreate the credentials it expects.
 
-> **The database side** lives in a separate repo:
+> The database side lives in a separate repo:
 > [mikeinpar/postimat-mcp-server](https://github.com/mikeinpar/postimat-mcp-server),
 > a read-only MCP server over the Postgres these workflows write to.
 
@@ -24,7 +24,7 @@ matches their `posting_hours` and whose slot isn't taken, then Worker-Core parse
 sources, runs an AI filter + AI rewrite, and hands off to a publisher. Outcomes
 land in `posts_queue`.
 
-**B. MAX bot (FSM).** `Onboarding-MAX ↔ Onboarding-Helpers` — the messenger UX:
+**B. MAX bot (FSM).** `Onboarding-MAX ↔ Onboarding-Helpers`, the messenger UX:
 channel onboarding, main menu, channel management.
 
 `Error Workflow` is a global error-trigger that alerts on any workflow failure.
@@ -44,7 +44,8 @@ channel onboarding, main menu, channel management.
 
 ## What was sanitized
 
-Real values were replaced with references — nothing sensitive remains in these files:
+Real values were replaced with references, so nothing sensitive remains in these
+files:
 
 | Original | Replaced with |
 |----------|---------------|
@@ -52,14 +53,14 @@ Real values were replaced with references — nothing sensitive remains in these
 | Admin/log Telegram chat id (8 places) | `{{ $env.ADMIN_CHAT_ID }}` / `$env.ADMIN_CHAT_ID` |
 | n8n `meta.instanceId` fingerprint | emptied |
 
-**Credentials** (Postgres, Telegram, MAX, LLM) were already reference-only in the
-export — n8n never writes credential secrets into a workflow JSON. On import you
-recreate those credentials in your own n8n and remap them.
+Credentials (Postgres, Telegram, MAX, LLM) were already reference-only in the
+export, because n8n never writes credential secrets into a workflow JSON. On
+import you recreate those credentials in your own n8n and remap them.
 
 ## Using them
 
-1. Import each JSON into n8n (workflows link to each other by **workflow id** —
-   if you re-import as new, fix the `Execute Workflow` references).
+1. Import each JSON into n8n. The workflows link to each other by workflow id,
+   so if you re-import as new, fix the `Execute Workflow` references.
 2. Recreate the credentials the nodes expect (Postgres `content_saas`, Telegram
    bot, MAX bot, LLM provider).
 3. Set the env vars from [`.env.example`](.env.example) in your n8n environment.
